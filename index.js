@@ -306,12 +306,10 @@ app.post("/createshorturl", async (request,response) => {
           createdAt: [{ date: date, month: month, year: year }],
         },
       ]);
-      console.log(result);
-      response.send({ message: "URL generated" });
+     response.send(result);
       return;
   } else {
-    console.log("url already exist");
-    response.status(400).send({message: `url already exist kindly refer show Table and the URL is: ${isurlexist.short}`});
+    response.status(400).send("url already exist ");
     return;
   }
 });
@@ -325,3 +323,45 @@ app.get("/geturl", async (request, response) => {
     .toArray();
   response.send(result);
 });
+
+app.get("/geturl/:shortenurl", async (request, response) => {
+  const {shortenurl}=request.params;
+const result = await client
+.db("guvi-node-app")
+.collection("urlshorten")
+.findOne({short:shortenurl});
+
+if(result){
+
+    const result1 = await client
+.db("guvi-node-app")
+.collection("urlshorten")
+.findOneAndUpdate({short:shortenurl},{$inc:{visit:1}});
+
+  response.redirect(result.long);
+}
+})
+
+
+// app.get("/geturl/monthlycount", async(request, response) => {
+//   let dt=new Date();
+ 
+//   let fulldate=[];
+//   let date=dt.getDate();
+//   let month=dt.getMonth()+1;
+//   // let filter={createdAt.month:month}
+//       const result = await client
+//   .db("guvi-node-app")
+//   .collection("urlshorten")
+//   .find({},{arrayFilters:[{"createdAt[0].month":month}]});
+
+  // const result = await client
+  // .db("B27rwd")
+  // .collection("urlshorten")
+  // .find({}).toArray((err,data)=>{response.json(data)});
+  
+  
+    // response.send(result);
+  // response.send("h"),
+// });
+
